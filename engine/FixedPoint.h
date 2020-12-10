@@ -5,16 +5,11 @@ template<int FIXED_BITS>
 class FixedPoint
 {
 public:
-    ~FixedPoint(){};
-    static constexpr FixedPoint fromInt(int value)
-    {
-        return value << FIXED_BITS;
-    }
+    FixedPoint():_value(0){}
 
-    static constexpr FixedPoint fromFloat(float value)
-    {
-        return value * one()._value;
-    }
+    FixedPoint(int value):_value(value << FIXED_BITS){};
+
+    FixedPoint(float value):_value(value * one()._value){}
 
     int rawValue() const
     {
@@ -23,22 +18,42 @@ public:
 
     FixedPoint operator+(const FixedPoint& other) const
     {
-        return _value + other._value;
+        return set(_value + other._value);
     }
 
     FixedPoint operator-(const FixedPoint& other) const
     {
-        return _value - other._value;
+        return set(_value - other._value);
     }
 
     FixedPoint operator*(const FixedPoint& other) const
     {
-        return ((long)_value * (long)other._value) >> FIXED_BITS;
+        return set(((long)_value * (long)other._value) >> FIXED_BITS);
     }
 
     FixedPoint operator/(const FixedPoint& other) const
     {
-        return (_value << FIXED_BITS) / other._value;
+        return set((_value << FIXED_BITS) / other._value);
+    }
+
+    constexpr bool operator==(const FixedPoint& other)
+    {
+        return _value == other._value;
+    }
+
+    constexpr bool operator==(const int other)
+    {
+        return _value == other << FIXED_BITS;
+    }
+
+    constexpr bool operator==(float other)
+    {
+        return _value == (1 << FIXED_BITS) * other;
+    }
+
+    constexpr bool operator<(const float other)
+    {
+        return _value < (other * one()._value);
     }
 
     int toInt() const 
@@ -46,20 +61,29 @@ public:
         return _value >> FIXED_BITS;
     }
 
-    int toFloat() const 
+    float toFloat() const 
     {
-        return _value / one()._value;
+        return (float)_value / one()._value;
     }
 
     static constexpr FixedPoint one()
     {
-        return 1 << FIXED_BITS;
-    } 
+        return set(1 << FIXED_BITS);
+    };
+
+    static constexpr FixedPoint PI()
+    {
+        return set((1 << FIXED_BITS) * 3.14159265359f);
+    }
 
 private:
     int _value;
-    FixedPoint(int value)
-    :_value(value){};
+    static constexpr FixedPoint set(int value)
+    {
+        FixedPoint f;
+        f._value = value;
+        return f;
+    }
 };
 
 #endif //_FIXED_POINT_H_

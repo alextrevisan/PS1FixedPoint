@@ -48,31 +48,6 @@ void display(void)
 
 typedef FixedPoint<12> Float;
 
-//int = 32bit
-//20bit for int part + 12bits for floating point part
-void page1()
-{
-	FntPrint(-1, "page 1\n");
-	test("Boolean test true", true);
-	test("Testing from_Int(32)", Float::fromInt(32).rawValue() == 131072);
-	test("Testing from_float(16)", Float::fromFloat(16.0f).rawValue() == 65536);
-	
-}
-
-void page2()
-{
-	FntPrint(-1, "page 2\n");
-	test("Testing sum 16 + 16", (Float::fromInt(16) + Float::fromInt(16)).rawValue() == 131072);
-	test("Testing sub 32 - 16", (Float::fromInt(32) - Float::fromInt(16)).rawValue() == 65536);
-	test("Testing mul 2 * 8", (Float::fromInt(2) * Float::fromInt(8)).rawValue() == 65536);
-}
-
-void page3()
-{
-	FntPrint(-1, "page 3\n");
-	test("Testing div 64 / 2", (Float::fromInt(64) / Float::fromInt(2)).rawValue() == 131072);
-	test("Testing div 64.0f / 2", (Float::fromFloat(64.0f) / Float::fromInt(2)).rawValue() == 131072);
-}
 //https://stackoverflow.com/questions/53962225/how-to-know-if-a-line-segment-intersects-a-triangle-in-3d-space
 /*olc::GFX3D::vec3d olc::GFX3D::Math::Vec_IntersectPlane(olc::GFX3D::vec3d &plane_p, olc::GFX3D::vec3d &plane_n, olc::GFX3D::vec3d &lineStart, olc::GFX3D::vec3d &lineEnd, float &t)
 	{
@@ -113,32 +88,45 @@ int main(int argc, const char *argv[])
 	init();
 
 
-	int pageCountTimer = 60*2;
-	int test_page = 1;
 	while(1)
 	{
-		if(pageCountTimer-- == 0)
+		int failedTests = 0;
+		failedTests += test("Boolean test true", true);
+		failedTests += test("Testing from_Int(1)", Float(1).rawValue() == 4096);
+		failedTests += test("Testing from_Int(32)", Float(32).rawValue() == 131072);
+		failedTests += test("Testing from_float(16)", Float(16.0f).rawValue() == 65536);
+		failedTests += test("Testing sum 16 + 16", (Float(16) + Float(16)).rawValue() == 131072);
+		failedTests += test("Testing sub 32 - 16", (Float(32) - Float(16)).rawValue() == 65536);
+		failedTests += test("Testing mul 2 * 8", (Float(2) * Float(8)).rawValue() == 65536);
+		failedTests += test("Testing div 64 / 2", (Float(64) / Float(2)).rawValue() == 131072);
+		failedTests += test("Testing div 64.0f / 2", (Float(64.0f) / Float(2)).rawValue() == 131072);
+
+		failedTests += test("Testing div 64.0f / int(2)", (Float(64.0f) / 2).rawValue() == 131072);
+		failedTests += test("Testing mul 2 * int(8)", (Float(2) * 8).rawValue() == 65536);
+
+		failedTests += test("Testing sub 32 - int(16)", (Float(32) - 16).rawValue() == 65536);
+		failedTests += test("Testing sum 16 + int(16)", (Float(16) + 16).rawValue() == 131072);
+
+		failedTests += test("Testing == 16 == (2 * 8)", Float(16) == Float(2) * Float(8));
+		failedTests += test("Testing == 16 == int(2 * 8)", Float(16) == 2 * 8);
+
+		failedTests += test("Testing == 16.f == float(16.f)", Float(3.141f) == 3.141f);
+
+		failedTests += test("Testing PI()", Float(3.141f) == 3.141f);
+
+		failedTests += test("Testing PI() != less than 0.001", Float::PI() - 3.141f < 0.001f);
+
+		FntPrint(-1, "PI: %.4f\n", Float::PI().toFloat());
+		FntPrint(-1, "PI: %.4f\n", Float(3.1415f).toFloat());
+		if(failedTests == 0)
 		{
-			test_page++;
-			pageCountTimer = 60*2;
+			FntPrint(-1, "All tests passed!\n");
+		}			
+		else
+		{
+			FntPrint(-1, "%d tests failed!\n", failedTests);
 		}
 
-		switch (test_page)
-		{
-		case 1:
-			page1();
-			break;
-		case 2:
-			page2();
-			break;
-		case 3:
-			page3();
-			break;
-		default:
-			test_page = 1;
-			break;
-		}
-		
 		FntFlush(-1);
 		display();
 		counter++;

@@ -1,7 +1,10 @@
 #include <psxgpu.h>
 
-void test(const char* name, bool test)
+int test(const char* name, bool test)
 {
-    const char* testValue = test ? "OK!" : "FAIL!";
-    FntPrint(-1, "%s = %s\n", name, testValue);
+    if(!test)
+    {
+        FntPrint(-1, "%s = FAIL!\n", name);
+    }
+    return test ? 0 : 1;
 }
