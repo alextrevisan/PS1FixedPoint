@@ -1,4 +1,4 @@
-# LastSurvivor
+# PS1FixedPoint
 FixedPoint Srithmetic in C++ for PS1 using PSn00bSDK and modern C++
 
 
