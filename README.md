@@ -1,5 +1,5 @@
 # PS1FixedPoint
-FixedPoint Srithmetic in C++ for PS1 using PSn00bSDK and modern C++
+FixedPoint Arithmetic in C++ for PS1 using PSn00bSDK and modern C++
 
 
 ## Setting up PSn00bSDK
