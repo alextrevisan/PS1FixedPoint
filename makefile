@@ -1,7 +1,7 @@
 include setup.mk
 
 # Project target name
-TARGET		= SLUS_034
+TARGET		= FixedPoint
 
 #TOOLS
 MKPSXISO    = tools/mkpsxiso.exe
@@ -11,7 +11,7 @@ ISO_FOLDER  = iso
 
 #EMULATOR
 EMUBIN = D:\\Games\\Emuladores\\Playstation\\ePSXe.exe
-EMU_CMD = $(EMUBIN) -nogui -loadbin iso/$(TARGET).34.FixedPoint.cue
+EMU_CMD = $(EMUBIN) -nogui -loadbin iso/$(TARGET).cue
 
 #ENGINE
 ENGINE_DIR = engine
@@ -33,7 +33,7 @@ OFILES		= $(addprefix build/,$(CFILES:.c=.o)) \
 
 # Project specific include and library directories
 # (use -I for include dirs, -L for library dirs)
-INCLUDE	 	+=	-I. -Iengine -Itests
+INCLUDE	 	+=	-I. -Iengine -Itests -Iengine/include
 LIBDIRS		+=
 
 # Libraries to link
@@ -68,7 +68,7 @@ all: $(OFILES) $(ENGINEFILES)
 	@mkdir -p $(BIN_FOLDER)
 	$(LD) $(LDFLAGS) $(LIBDIRS) $(OFILES) $(ENGINEFILES) $(LIBS)  -o bin/$(TARGET)
 	elf2x -q $(BIN_FOLDER)/$(TARGET) $(BIN_FOLDER)/$(TARGET).exe
-	elf2x -q $(BIN_FOLDER)/$(TARGET) $(BIN_FOLDER)/$(TARGET).34
+	elf2x -q $(BIN_FOLDER)/$(TARGET) $(BIN_FOLDER)/$(TARGET)
 
 iso: all
 	@mkdir -p $(ISO_FOLDER)
