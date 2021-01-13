@@ -1,10 +1,10 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
-template<int FIXED_BITS, typename storeType, typename castType = long>
+template<typename FloatType>
 struct _VECTOR
 {
-	typedef FixedPoint<FIXED_BITS, storeType, castType> _Float;
+	typedef FloatType _Float;
 
 	_VECTOR(const _Float& x, const _Float y, const _Float z):vx(x), vy(y), vz(z){}
     _VECTOR(const SVECTOR& input):vx(_Float::fromRaw(input.vx)), vy(_Float::fromRaw(input.vy)), vz(_Float::fromRaw(input.vz)){}
@@ -54,7 +54,7 @@ struct _VECTOR
 
     constexpr _Float length() const
     {
-        //return _Float::sqrt_approx(dotProduct());
+        //return _Float::sqrt(dotProduct());
 
         //SquareRoot12 is 17x faster but precision is bad
         return _Float::fromRaw(SquareRoot12(dotProduct().rawValue()));
@@ -62,6 +62,8 @@ struct _VECTOR
 
     static const _Float length(const _VECTOR& vector)
     {
+        return _Float::fromRaw(SquareRoot12(dotProduct(vector, vector).rawValue()));
+
         return _Float::sqrt(dotProduct(vector, vector));
     }
 
@@ -93,6 +95,5 @@ struct _VECTOR
 	_Float vx, vy, vz;
 };
 
-typedef _VECTOR<12, short, int> SVector3D;
-typedef _VECTOR<12, int, long long> Vector3D;
+typedef _VECTOR<FixedPoint<12, int, long long>> Vector3D;
 #endif //#ifndef _VECTOR_H_
