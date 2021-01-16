@@ -8,6 +8,7 @@
 #include <tests.h>
 #include <FixedPoint.h>
 #include <Vector.h>
+#include <Triangle.h>
 
 DISPENV disp[2];
 DRAWENV draw[2];
