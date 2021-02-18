@@ -4,12 +4,12 @@
 template<typename FloatType, typename ConvertType>
 struct _VECTOR
 {
-	typedef FloatType _Float;
+    typedef FloatType _Float;
 
-	_VECTOR(const _Float& x, const _Float y, const _Float z):vx(x), vy(y), vz(z){}
+    _VECTOR(const _Float& x, const _Float y, const _Float z):vx(x), vy(y), vz(z){}
     _VECTOR(const SVECTOR& input):vx(_Float::FromFixedPoint(input.vx)), vy(_Float::FromFixedPoint(input.vy)), vz(_Float::FromFixedPoint(input.vz)){}
-	_VECTOR(const VECTOR& input):vx(_Float::FromFixedPoint(input.vx)), vy(_Float::FromFixedPoint(input.vy)), vz(_Float::FromFixedPoint(input.vz)){}
-	_VECTOR():vx(0), vy(0), vz(0){}
+    _VECTOR(const VECTOR& input):vx(_Float::FromFixedPoint(input.vx)), vy(_Float::FromFixedPoint(input.vy)), vz(_Float::FromFixedPoint(input.vz)){}
+    _VECTOR():vx(0), vy(0), vz(0){}
 
     const _VECTOR operator-(const _VECTOR& other) const
     {
@@ -34,12 +34,12 @@ struct _VECTOR
 
     const _VECTOR normalize() const
     {
-		/*const VECTOR input = {vx.toInt(), vy.toInt(), vz.toInt()};
+        /*const VECTOR input = {vx.toInt(), vy.toInt(), vz.toInt()};
         SVECTOR output;
         VectorNormalS(&input, &output);
         return output;*/
         const _Float l = length();
-		return { vx / l, vy / l, vz / l };
+        return { vx / l, vy / l, vz / l };
     }
 
     static const _VECTOR normalize(const _VECTOR& vector)
@@ -49,7 +49,7 @@ struct _VECTOR
         VectorNormalS(&input, &output);
         return output;*/
         const _Float l = length(vector);
-		return { vector.vx / l, vector.vy / l, vector.vz / l };
+        return { vector.vx / l, vector.vy / l, vector.vz / l };
     }
 
     constexpr _Float length() const
@@ -97,7 +97,7 @@ struct _VECTOR
         return (ConvertType*) this;
     }
     
-	_Float vx, vy, vz;
+    _Float vx, vy, vz;
 };
 
 typedef _VECTOR<FixedPoint<12, int, long long>, VECTOR> Vector3D;
