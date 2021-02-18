@@ -7,8 +7,8 @@ struct _VECTOR
 	typedef FloatType _Float;
 
 	_VECTOR(const _Float& x, const _Float y, const _Float z):vx(x), vy(y), vz(z){}
-    _VECTOR(const SVECTOR& input):vx(_Float::fromRaw(input.vx)), vy(_Float::fromRaw(input.vy)), vz(_Float::fromRaw(input.vz)){}
-	_VECTOR(const VECTOR& input):vx(_Float::fromRaw(input.vx)), vy(_Float::fromRaw(input.vy)), vz(_Float::fromRaw(input.vz)){}
+    _VECTOR(const SVECTOR& input):vx(_Float::FromFixedPoint(input.vx)), vy(_Float::FromFixedPoint(input.vy)), vz(_Float::FromFixedPoint(input.vz)){}
+	_VECTOR(const VECTOR& input):vx(_Float::FromFixedPoint(input.vx)), vy(_Float::FromFixedPoint(input.vy)), vz(_Float::FromFixedPoint(input.vz)){}
 	_VECTOR():vx(0), vy(0), vz(0){}
 
     const _VECTOR operator-(const _VECTOR& other) const
@@ -44,7 +44,7 @@ struct _VECTOR
 
     static const _VECTOR normalize(const _VECTOR& vector)
     {
-        /*const VECTOR input = {vector.vx.rawValue(), vector.vy.rawValue(), vector.vz.rawValue()};
+        /*const VECTOR input = {vector.vx.AsFixedPoint(), vector.vy.AsFixedPoint(), vector.vz.AsFixedPoint()};
         SVECTOR output;
         VectorNormalS(&input, &output);
         return output;*/
@@ -54,17 +54,12 @@ struct _VECTOR
 
     constexpr _Float length() const
     {
-        //return _Float::sqrt(dotProduct());
-
-        //SquareRoot12 is 17x faster but precision is bad
-        return _Float::fromRaw(SquareRoot12(dotProduct().rawValue()));
+        return _Float::FromFixedPoint(SquareRoot12(dotProduct().AsFixedPoint()));
     }
 
     static const _Float length(const _VECTOR& vector)
     {
-        return _Float::fromRaw(SquareRoot12(dotProduct(vector, vector).rawValue()));
-
-        return _Float::sqrt(dotProduct(vector, vector));
+        return _Float::FromFixedPoint(SquareRoot12(dotProduct(vector, vector).AsFixedPoint()));
     }
 
     const _Float dotProduct() const

@@ -51,8 +51,8 @@ void init(void)
 void display(void)
 {
 	db = !db;
-	DrawSync(0);
-	VSync(0);
+	//DrawSync(0);
+	//VSync(0);
 	PutDispEnv(&disp[db]);
 	PutDrawEnv(&draw[db]);
 	SetDispMask(1);
@@ -77,16 +77,20 @@ int main(int argc, const char *argv[])
 		Assert.Reset();
 
 		//Basic Float tests
-		Assert.AreEqual(Float(1).rawValue(), 4096, __LINE__);
-		Assert.AreEqual(Float(32).rawValue(), 131072, __LINE__);
-		Assert.AreEqual(Float(16).rawValue(), 65536, __LINE__);
+		Assert.AreEqual(Float(1).AsFixedPoint(), 4096, __LINE__);
+		Assert.AreEqual(Float(32).AsFixedPoint(), 131072, __LINE__);
+		Assert.AreEqual(Float(16).AsFixedPoint(), 65536, __LINE__);
 
-		Assert.AreEqual(-Float(16).toInt(), -16, __LINE__);
+		Assert.AreEqual(-Float(16).AsInt(), -16, __LINE__);
 
 		Assert.AreEqual((Float(16) + Float(16)), Float(32), __LINE__, "operator+");
 		Assert.AreEqual((Float(32) - Float(16)), Float(16), __LINE__, "operator-");
 		Assert.AreEqual((Float(16) * Float(2)), Float(32), __LINE__, "operator*");
 		Assert.AreEqual((Float(32) / Float(2)), Float(16), __LINE__, "operator/");
+
+		Assert.AreEqual( (~Float(32)).AsInt(), ~32, __LINE__, "operator~");
+		Assert.AreEqual( (+Float(32)).AsInt(), +32, __LINE__, "operator+");
+		Assert.AreEqual( (-Float(32)).AsInt(), -32, __LINE__, "operator-");
 
 		Assert.AreEqual<bool>(Float(32) == Float(32), true, __LINE__, "operator==");
 		Assert.AreEqual<bool>(Float(0) != Float(32), true, __LINE__, "operator!=");
@@ -99,30 +103,52 @@ int main(int argc, const char *argv[])
 		Assert.AreEqual<bool>(Float(32) >= Float(31), true, __LINE__, "operator>=");
 		Assert.AreEqual<bool>(Float(32) >= Float(32), true, __LINE__, "operator>=");
 
-		Assert.IsLessThan(abs(Float::PI().toFloat() - 3.14159265359f), 0.001f, __LINE__);
+		Assert.AreEqual( Float(16)+=16, Float(32), __LINE__, "operator+=");
+		Assert.AreEqual( Float(16)-=8, Float(8), __LINE__, "operator-=");
+		Assert.AreEqual( Float(16)*=2, Float(32), __LINE__, "operator*=");
+		Assert.AreEqual( Float(32)/=2, Float(16), __LINE__, "operator/=");
+		Assert.AreEqual( (Float(32)%=2).AsInt(), 32%2, __LINE__, "operator%=");
 
-		Assert.AreEqual(Float::fromRaw(SquareRoot12(Float(49).rawValue())), Float(7), __LINE__);
-																							//round error from 5.65685424949
-		Assert.AreEqual(Float::fromRaw(SquareRoot12(Float(32).rawValue())).rawValue(), Float(5.6564f).rawValue(), __LINE__);
+		Assert.AreEqual( (Float(16)|=8).AsInt(), 16|8, __LINE__, "operator|=");
+		Assert.AreEqual( (Float(16)&=2).AsInt(), 16&2, __LINE__, "operator&=");
+		Assert.AreEqual( (Float(32)^=2).AsInt(), 32^2, __LINE__, "operator^=");
+
+		Assert.AreEqual( (Float(16)>>1).AsInt(), 16>>1, __LINE__, "operator>>");
+		Assert.AreEqual( (Float(16)<<1).AsInt(), 16<<1, __LINE__, "operator<<");
+		
+		Assert.AreEqual( (Float(16)>>=1).AsInt(), 16>>1, __LINE__, "operator>>=");
+		Assert.AreEqual( (Float(16)<<=1).AsInt(), 16<<1, __LINE__, "operator<<=");
+
+		Assert.AreEqual( (Float(16)++).AsInt(), 17, __LINE__, "operator++");
+		Assert.AreEqual( (Float(16)--).AsInt(), 15, __LINE__, "operator--");
+
+		Assert.AreEqual( Float(-16).Abs(), Float(16), __LINE__, "Abs");		
+
+		Assert.IsLessThan(abs(Float::PI().AsFloat() - 3.14159265359f), 0.001f, __LINE__);
+
+		Assert.AreEqual(Float::FromFixedPoint(SquareRoot12(Float(49).AsFixedPoint())), Float(7), __LINE__);
+																						 //round error from 5.65685424949
+		Assert.AreEqual(Float::FromFixedPoint(SquareRoot12(Float(32).AsFixedPoint())).AsFixedPoint(), Float(5.6564f).AsFixedPoint(), __LINE__);
 
 		Vector3D vector(1,50,6);
 		const auto dot = vector.dotProduct(vector);
 		
-		Assert.AreEqual(dot.toInt(), 2537, __LINE__);
+		Assert.AreEqual(dot.AsInt(), 2537, __LINE__);
 
 		//There are some precision differences in the SquareRoot12 and sqrt
-		Assert.AreEqual(SquareRoot12(2537<<12), Float(50.2736f).rawValue(), __LINE__);
-		Assert.AreEqual(Float::sqrt(2537).rawValue(), Float(50.3687f).rawValue(), __LINE__);
+		Assert.AreEqual(SquareRoot12(2537<<12), Float(50.2736f).AsFixedPoint(), __LINE__);
 
 		const auto magnitude = vector.length();
-		Assert.AreEqual(magnitude.rawValue(), Vector3D::_Float(50.2736f).rawValue(), __LINE__);
+		Assert.AreEqual(magnitude.AsFixedPoint(), Vector3D::_Float(50.2736f).AsFixedPoint(), __LINE__);
 
 		const Vector3D nomalized = vector.normalize(vector);
 		const Vector3D test(0.0199f, 0.9946f, 0.1192f);
-		Assert.AreEqual(nomalized.vx.rawValue(), test.vx.rawValue(), __LINE__);
-		Assert.AreEqual(nomalized.vy.rawValue(), test.vy.rawValue(), __LINE__);
-		Assert.AreEqual(nomalized.vz.rawValue(), test.vz.rawValue(), __LINE__);
-/*
+		Assert.AreEqual(nomalized.vx.AsFixedPoint(), test.vx.AsFixedPoint(), __LINE__);
+		Assert.AreEqual(nomalized.vy.AsFixedPoint(), test.vy.AsFixedPoint(), __LINE__);
+		Assert.AreEqual(nomalized.vz.AsFixedPoint(), test.vz.AsFixedPoint(), __LINE__);
+
+		//Performance test
+		/*
 		int OldValue = 0;
 		ResetRCnt(RCntCNT1);
 		OldValue = GetRCnt(RCntCNT1);
@@ -133,11 +159,10 @@ int main(int argc, const char *argv[])
 		{
 			Vector3D input{v1,v2,v3};	
 			const auto normal = input.normalize();
-			value += normal.vx.rawValue();
+			value += normal.vx.AsFixedPoint();
 		}
 		int NewValue = GetRCnt(RCntCNT1) - OldValue;
 		FntPrint(-1, "It took %d HBlanks! Count=%d\n", NewValue, value);
-
 
 		ResetRCnt(RCntCNT1);
 		OldValue = GetRCnt(RCntCNT1);
@@ -153,7 +178,7 @@ int main(int argc, const char *argv[])
 		}
 		NewValue = GetRCnt(RCntCNT1) - OldValue;
 		FntPrint(-1, "It took %d HBlanks! Count=%d\n", NewValue, value);
-*/
+		*/
 
 		if(Assert.ErrorCount() == 0)
 		{
