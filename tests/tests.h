@@ -1,6 +1,6 @@
 #include <psxgpu.h>
 #include <string.h>
-#include <type_traits>
+
 constexpr int test(const char* name, bool test)
 {
     if(!test)
@@ -9,6 +9,18 @@ constexpr int test(const char* name, bool test)
     }
     return test ? 0 : 1;
 }
+
+template<typename T, typename U>
+struct is_same
+{
+    static constexpr bool value = false;
+};
+
+template<typename T>
+struct is_same<T, T>
+{
+    static constexpr bool value = true;
+};
 
 class _assert
 {
@@ -26,32 +38,32 @@ public:
         if(!test)
         {
             memset(&LastTestWithError[0], '\0', 256);
-            if constexpr (std::is_same<long long, testType>::value)
+            if constexpr (is_same<long long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %lld == %lld", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<unsigned long, testType>::value)
+            if constexpr (is_same<unsigned long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %lu == %lu", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<long, testType>::value)
+            if constexpr (is_same<long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %ld == %ld", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<int, testType>::value)
+            if constexpr (is_same<int, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %d == %d", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<short, testType>::value)
+            if constexpr (is_same<short, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %d == %d", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<float, testType>::value)
+            if constexpr (is_same<float, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %f == %f", __FUNCTION__, line, l, r);
                 return;
@@ -70,34 +82,34 @@ public:
         if(!test)
         {
             memset(&LastTestWithError[0], '\0', 256);
-            if constexpr (std::is_same<long long, testType>::value)
+            if constexpr (is_same<long long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %ll == %ll", testName, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<unsigned long, testType>::value)
+            if constexpr (is_same<unsigned long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %lu == %lu", testName, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<long, testType>::value)
+            if constexpr (is_same<long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %ld == %ld", testName, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<int, testType>::value)
+            if constexpr (is_same<int, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %d == %d", testName, line, l, r);
                 return;
             }
 
-            if constexpr (std::is_same<short, testType>::value)
+            if constexpr (is_same<short, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %d == %d", testName, line, l, r);
                 return;
             }
 
-            if constexpr (std::is_same<float, testType>::value)
+            if constexpr (is_same<float, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %f == %f", testName, line, l, r);
                 return;
@@ -116,27 +128,27 @@ public:
         if(!test)
         {
             memset(&LastTestWithError[0], '\0', 256);
-            if constexpr (std::is_same<unsigned long, testType>::value)
+            if constexpr (is_same<unsigned long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %lu < %lu", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<long, testType>::value)
+            if constexpr (is_same<long, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %ld < %ld", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<int, testType>::value)
+            if constexpr (is_same<int, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %d < %d", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<short, testType>::value)
+            if constexpr (is_same<short, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %d < %d", __FUNCTION__, line, l, r);
                 return;
             }
-            if constexpr (std::is_same<float, testType>::value)
+            if constexpr (is_same<float, testType>::value)
             {
                 sprintf(&LastTestWithError[0], "%s LINE: %d FAIL: %f < %f", __FUNCTION__, line, l, r);
                 return;
