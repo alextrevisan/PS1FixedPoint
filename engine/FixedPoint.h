@@ -28,7 +28,7 @@ public:
     constexpr bool operator>=(const FixedPoint &other) const { return _value >= other._value; }
 
     constexpr FixedPoint operator~() const { return set(~_value); } 
-	constexpr FixedPoint operator+() const { return *this; }
+    constexpr FixedPoint operator+() const { return *this; }
     constexpr FixedPoint operator-() const { return set(-_value); }
 
     constexpr FixedPoint operator+(const FixedPoint &other) const { return set(_value + other._value); }
@@ -43,19 +43,19 @@ public:
     FixedPoint& operator%=(const long& other) { _value = (((IntermediateType)_value)<<FRACTION_BITS) % other;  return *this; }
 
     FixedPoint& operator|=(const FixedPoint& other) { _value |=  other._value; return *this;}
-	FixedPoint& operator&=(const FixedPoint& other) { _value &= other._value; return *this;}
-	FixedPoint& operator^=(const FixedPoint& other) { _value ^= other._value; return *this;}
+    FixedPoint& operator&=(const FixedPoint& other) { _value &= other._value; return *this;}
+    FixedPoint& operator^=(const FixedPoint& other) { _value ^= other._value; return *this;}
 
     FixedPoint operator<<(int numBits) const { return set(_value << numBits); }
-	FixedPoint operator>>(int numBits) const { return set(_value >> numBits); }
+    FixedPoint operator>>(int numBits) const { return set(_value >> numBits); }
 
     FixedPoint& operator<<=(int numBits) { _value <<= numBits; return *this;}
-	FixedPoint& operator>>=(int numBits) { _value >>= numBits; return *this;}
+    FixedPoint& operator>>=(int numBits) { _value >>= numBits; return *this;}
 
     FixedPoint& operator++() { _value += 1<<FRACTION_BITS; return *this; } 
-	FixedPoint& operator--() { _value -= 1<<FRACTION_BITS; return *this; }
+    FixedPoint& operator--() { _value -= 1<<FRACTION_BITS; return *this; }
     FixedPoint& operator++(int) { _value += 1<<FRACTION_BITS; return *this; } 
-	FixedPoint& operator--(int) { _value -= 1<<FRACTION_BITS; return *this; }
+    FixedPoint& operator--(int) { _value -= 1<<FRACTION_BITS; return *this; }
 
     constexpr FixedPoint Abs() const { if(_value<0) return set(-_value); return set(_value); }
 
