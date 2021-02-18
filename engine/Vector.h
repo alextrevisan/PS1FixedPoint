@@ -1,7 +1,7 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
-template<typename FloatType>
+template<typename FloatType, typename ConvertType>
 struct _VECTOR
 {
 	typedef FloatType _Float;
@@ -87,8 +87,19 @@ struct _VECTOR
         return {vx+other.vx,vy+other.vy,vz+other.vz};
     }
 
+    operator ConvertType()
+    {
+        return ConvertType{vx.AsFixedPoint(),vy.AsFixedPoint(),vz.AsFixedPoint()};
+    }
+
+    operator ConvertType*()
+    {
+        return (ConvertType*) this;
+    }
+    
 	_Float vx, vy, vz;
 };
 
-typedef _VECTOR<FixedPoint<12, int, long long>> Vector3D;
+typedef _VECTOR<FixedPoint<12, int, long long>, VECTOR> Vector3D;
+typedef _VECTOR<FixedPoint<12, short, long long>, SVECTOR> SVector3D;
 #endif //#ifndef _VECTOR_H_

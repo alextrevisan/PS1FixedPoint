@@ -15,6 +15,7 @@ DRAWENV draw[2];
 int db;
 
 typedef FixedPoint<12, int, long long> Float;
+typedef FixedPoint<12, short, long long> SFloat;
 
 template<typename T>
 constexpr T abs(const T& value)
@@ -147,6 +148,16 @@ int main(int argc, const char *argv[])
 		Assert.AreEqual(nomalized.vy.AsFixedPoint(), test.vy.AsFixedPoint(), __LINE__);
 		Assert.AreEqual(nomalized.vz.AsFixedPoint(), test.vz.AsFixedPoint(), __LINE__);
 
+		Vector3D input{1.0f,0.75f,0.5f};
+        SVector3D output;
+        VectorNormalS(input, output);
+		Assert.AreEqual(output.vx, SFloat(0.742781352f), __LINE__);
+		Assert.AreEqual(output.vy, SFloat(0.557086014f), __LINE__);
+		Assert.AreEqual(output.vz, SFloat(0.371390676f), __LINE__);
+		Assert.AreEqual((int)sizeof(input),12, __LINE__);
+		Assert.AreEqual((int)sizeof(output),6, __LINE__);
+
+		
 		//Performance test
 		/*
 		int OldValue = 0;
