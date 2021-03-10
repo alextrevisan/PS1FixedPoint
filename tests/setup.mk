@@ -18,8 +18,8 @@ ifndef PSN00BSDK_LIBS
 
 # Default assumes libpsn00b is just in the parent dir of the examples dir
 
-LIBDIRS		= -L../psn00bsdk/libpsn00b
-INCLUDE	 	= -I../psn00bsdk/libpsn00b/include
+LIBDIRS		= -L../../psn00bsdk/libpsn00b
+INCLUDE	 	= -I../../psn00bsdk/libpsn00b/include
 
 else
 

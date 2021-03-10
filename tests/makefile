@@ -14,7 +14,7 @@ EMUBIN = D:\\Games\\Emuladores\\Playstation\\ePSXe.exe
 EMU_CMD = $(EMUBIN) -nogui -loadbin iso/$(TARGET).cue
 
 #ENGINE
-ENGINE_DIR = engine
+ENGINE_DIR = ..\\FixedPoint
 
 # Searches for C, C++ and S (assembler) files in local directory
 CFILES		= $(notdir $(wildcard *.c))

@@ -7,9 +7,9 @@
 #include <psxapi.h>
 
 #include <tests.h>
-#include <FixedPoint.h>
-#include <Vector.h>
-#include <Triangle.h>
+#include <../FixedPoint/FixedPoint.h>
+#include <../FixedPoint/Vector.h>
+#include <../FixedPoint/Triangle.h>
 
 DISPENV disp[2];
 DRAWENV draw[2];
