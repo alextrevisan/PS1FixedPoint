@@ -105,6 +105,11 @@ struct Vector3F
         return (VECTOR*) this;
     }
 
+    inline constexpr operator const VECTOR() const 
+    {
+        return VECTOR{vx.AsFixedPoint(),vy.AsFixedPoint(),vz.AsFixedPoint()};
+    }
+
     static inline const Vector3F FromSVECTOR(const SVECTOR& other)
     {
         return Vector3F{
