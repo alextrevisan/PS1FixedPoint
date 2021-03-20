@@ -9,7 +9,7 @@ struct Vector3F
 {
     typedef FloatType Float;
 
-    Vector3F(const Float& x, const Float y, const Float z):vx(x), vy(y), vz(z){}
+    Vector3F(const Float& x, const Float& y, const Float& z):vx(x), vy(y), vz(z){}
     Vector3F(const SVECTOR& input):vx(Float::FromFixedPoint(input.vx)), vy(Float::FromFixedPoint(input.vy)), vz(Float::FromFixedPoint(input.vz)){}
     Vector3F(const VECTOR& input):vx(Float::FromFixedPoint(input.vx)), vy(Float::FromFixedPoint(input.vy)), vz(Float::FromFixedPoint(input.vz)){}
     Vector3F():vx(0), vy(0), vz(0){}
