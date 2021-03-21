@@ -9,7 +9,7 @@ struct Vector3F
 {
     typedef FloatType Float;
 
-    Vector3F(const Float& x, const Float& y, const Float& z):vx(x), vy(y), vz(z){}
+    Vector3F(const Float& x, const Float y, const Float z):vx(x), vy(y), vz(z){}
     Vector3F(const SVECTOR& input):vx(Float::FromFixedPoint(input.vx)), vy(Float::FromFixedPoint(input.vy)), vz(Float::FromFixedPoint(input.vz)){}
     Vector3F(const VECTOR& input):vx(Float::FromFixedPoint(input.vx)), vy(Float::FromFixedPoint(input.vy)), vz(Float::FromFixedPoint(input.vz)){}
     Vector3F():vx(0), vy(0), vz(0){}
@@ -37,7 +37,7 @@ struct Vector3F
 
     const Vector3F normalize() const
     {
-        const VECTOR input = {vx.AsInt(), vy.AsInt(), vz.AsInt()};
+        VECTOR input = {vx.AsFixedPoint(), vy.AsFixedPoint(), vz.AsFixedPoint()};
         SVECTOR output;
         VectorNormalS(&input, &output);
         return output;
@@ -90,7 +90,7 @@ struct Vector3F
         return {vx+other.vx,vy+other.vy,vz+other.vz};
     }
 
-    inline constexpr operator SVECTOR()
+    inline constexpr operator SVECTOR() const
     {
         return SVECTOR{vx.AsFixedPoint(),vy.AsFixedPoint(),vz.AsFixedPoint(),0};
     }
@@ -103,11 +103,6 @@ struct Vector3F
     inline constexpr operator VECTOR*() const 
     {
         return (VECTOR*) this;
-    }
-
-    inline constexpr operator const VECTOR() const 
-    {
-        return VECTOR{vx.AsFixedPoint(),vy.AsFixedPoint(),vz.AsFixedPoint()};
     }
 
     static inline const Vector3F FromSVECTOR(const SVECTOR& other)
@@ -128,7 +123,6 @@ struct Vector3F
         }; 
     }
 
-    
     Float vx, vy, vz;
 };
 
