@@ -4,127 +4,104 @@
 #include <psxgte.h>
 namespace ps1
 {
-template<typename FloatType>
-struct Vector3F
+template<typename VectorType>
+struct Vector3F;
+
+typedef  Vector3F<VECTOR> Vector3D;
+typedef Vector3F<SVECTOR> SVector3D;
+
+template<typename VectorType>
+struct Vector3F : public VectorType
 {
-    typedef FloatType Float;
+    using type = decltype(VectorType::vx);
+    Vector3F()
+    :VectorType{0,0,0}
+    {}
+    Vector3F(type vx, type vy, type vz)
+    :VectorType{vx, vy, vz}
+    {
 
-    Vector3F(const Float& x, const Float y, const Float z):vx(x), vy(y), vz(z){}
-    Vector3F(const SVECTOR& input):vx(Float::FromFixedPoint(input.vx)), vy(Float::FromFixedPoint(input.vy)), vz(Float::FromFixedPoint(input.vz)){}
-    Vector3F(const VECTOR& input):vx(Float::FromFixedPoint(input.vx)), vy(Float::FromFixedPoint(input.vy)), vz(Float::FromFixedPoint(input.vz)){}
-    Vector3F():vx(0), vy(0), vz(0){}
+    }
 
+    Vector3F(const VectorType& vector )
+    :VectorType::vx(vector.vx), VectorType::vy(vector.vy), VectorType::vz(vector.vz)
+    {
+
+    }
     const Vector3F operator-(const Vector3F& other) const
     {
-        return {vx - other.vx, vy - other.vy, vz - other.vz};
+        return {VectorType::vx - other.vx, VectorType::vy - other.vy, VectorType::vz - other.vz};
     }
 
-    inline const Vector3F crossProduct(const Vector3F& right) const
+    inline static constexpr Vector3D crossProduct(const Vector3F& right)
     {
-        return {((vy*right.vz)-(vz*right.vy)),
-                ((vz*right.vx)-(vx*right.vz)),
-                ((vx*right.vy)-(vy*right.vx))
+        return {((VectorType::vy*right.vz)-(VectorType::vz*right.vy)>>12),
+                ((VectorType::vz*right.vx)-(VectorType::vx*right.vz)>>12),
+                ((VectorType::vx*right.vy)-(VectorType::vy*right.vx)>>12)
         };
     }
 
-    static const Vector3F crossProduct(const Vector3F& left, const Vector3F& right)
+    inline static constexpr Vector3D crossProduct(const Vector3F& left, const Vector3F& right)
     {
-        return {((left.vy*right.vz)-(left.vz*right.vy)),
-                ((left.vz*right.vx)-(left.vx*right.vz)),
-                ((left.vx*right.vy)-(left.vy*right.vx))
+        return{(((left.vy*right.vz)-(left.vz*right.vy))>>12),
+                (((left.vz*right.vx)-(left.vx*right.vz))>>12),
+                (((left.vx*right.vy)-(left.vy*right.vx))>>12)
         };
     }
 
-    const Vector3F normalize() const
+    constexpr inline int length() const
     {
-        VECTOR input = {vx.AsFixedPoint(), vy.AsFixedPoint(), vz.AsFixedPoint()};
-        SVECTOR output;
-        VectorNormalS(&input, &output);
+        return SquareRoot12(dotProduct());
+    }
+
+    static const int length(const Vector3F& vector)
+    {
+        return SquareRoot12(dotProduct(vector, vector));
+    }
+
+    const inline int dotProduct() const
+    {
+        return VectorType::vx*VectorType::vx + VectorType::vy*VectorType::vy + VectorType::vz*VectorType::vz;
+    }
+
+    const int dotProduct(const Vector3F& other) const
+    {
+        return VectorType::vx*other.vx + VectorType::vy*other.vy + VectorType::vz * other.vz;
+    }
+
+    const inline SVector3D normalise()
+    {
+        SVector3D output;
+        VectorNormalS(this, &output);
         return output;
-        //const Float l = length();
-        //return { vx / l, vy / l, vz / l };
     }
 
-    static inline const Vector3F normalize(const Vector3F& vector)
+    operator VectorType& ()
     {
-        SVECTOR output;
-        VectorNormalS(vector, &output);
-        return output;
-        
-        /*const Float l = length(vector);
-        return { vector.vx / l, vector.vy / l, vector.vz / l };*/
+        return this;
     }
-
-    constexpr inline Float length() const
-    {
-        return Float::FromFixedPoint(SquareRoot12(dotProduct().AsFixedPoint()));
-    }
-
-    static const Float length(const Vector3F& vector)
-    {
-        return Float::FromFixedPoint(SquareRoot12(dotProduct(vector, vector).AsFixedPoint()));
-    }
-
-    const Float dotProduct() const
-    {
-        return vx*vx + vy*vy + vz*vz;
-    }
-
-    const Float dotProduct(const Vector3F& other) const
-    {
-        return vx*other.vx + vy*other.vy + vz * other.vz;
-    }
-
-    static const Float dotProduct(const Vector3F& left, const Vector3F& right)
-    {
-        return left.vx*right.vx + left.vy*right.vy + left.vz * right.vz;
-    }
-
-    const Vector3F operator*(const Float& other) const 
-    {
-        return {vx*other,vy*other,vz*other};
-    }
-
-    const Vector3F operator+(const Vector3F& other) const 
-    {
-        return {vx+other.vx,vy+other.vy,vz+other.vz};
-    }
-
-    inline constexpr operator SVECTOR() const
-    {
-        return SVECTOR{vx.AsFixedPoint(),vy.AsFixedPoint(),vz.AsFixedPoint(),0};
-    }
-
-    inline constexpr operator SVECTOR*()
-    {
-        return (SVECTOR*) this;
-    }
-
-    inline constexpr operator VECTOR*() const 
-    {
-        return (VECTOR*) this;
-    }
-
-    static inline const Vector3F FromSVECTOR(const SVECTOR& other)
-    {
-        return Vector3F{
-            Float::FromFixedPoint(other.vx),
-            Float::FromFixedPoint(other.vy),
-            Float::FromFixedPoint(other.vz)
-        };
-    }
-
-    static inline const Vector3F FromFixedPoint(const typename FloatType::Type vx, const typename FloatType::Type vy, const typename FloatType::Type vz)
-    {
-        return Vector3F{
-            Float::FromFixedPoint(vx),
-            Float::FromFixedPoint(vy),
-            Float::FromFixedPoint(vz)
-        }; 
-    }
-
-    Float vx, vy, vz;
 };
+
+const Vector3D operator*(const Vector3D& vector, const int other) 
+{
+    return {vector.vx*other,vector.vy*other,vector.vz*other};
+}
+
+const Vector3D operator*(const SVector3D& vector, const int other) 
+{
+    return {vector.vx*other,vector.vy*other,vector.vz*other};
+}
+
+
+const Vector3D operator+(const Vector3D& left, const auto& right) 
+{
+    return {left.vx+right.vx,left.vy+right.vy,left.vz+right.vz};
+}
+
+const Vector3D operator+(const auto& left, const Vector3D& right) 
+{
+    return {left.vx+right.vx,left.vy+right.vy,left.vz+right.vz};
+}
 
 } //namespace ps1
 
