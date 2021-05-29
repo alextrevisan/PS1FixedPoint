@@ -51,7 +51,8 @@ struct Vector3F : public VectorType
 
     constexpr inline int length() const
     {
-        return SquareRoot12(dotProduct());
+        const auto dot = dotProduct();
+        return SquareRoot12(dot<<12);
     }
 
     static const int length(const Vector3F& vector)
@@ -59,7 +60,7 @@ struct Vector3F : public VectorType
         return SquareRoot12(dotProduct(vector, vector));
     }
 
-    const inline int dotProduct() const
+    constexpr inline int dotProduct() const
     {
         return VectorType::vx*VectorType::vx + VectorType::vy*VectorType::vy + VectorType::vz*VectorType::vz;
     }
@@ -69,14 +70,31 @@ struct Vector3F : public VectorType
         return VectorType::vx*other.vx + VectorType::vy*other.vy + VectorType::vz * other.vz;
     }
 
-    const inline SVector3D normalise()
+    const inline SVector3D normalize()
     {
         SVector3D output;
         VectorNormalS(this, &output);
         return output;
     }
 
+    static constexpr inline SVector3D normalize(const VectorType& input)
+    {
+        SVector3D output;
+        VectorNormalS(&input, &output);
+        return output;
+    }
+
     operator VectorType& ()
+    {
+        return this;
+    }
+
+    inline constexpr operator VectorType*() const
+    {
+        return this;
+    }
+
+    inline operator VectorType*()
     {
         return this;
     }
@@ -102,6 +120,7 @@ const Vector3D operator+(const auto& left, const Vector3D& right)
 {
     return {left.vx+right.vx,left.vy+right.vy,left.vz+right.vz};
 }
+
 
 } //namespace ps1
 

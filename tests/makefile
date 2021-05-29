@@ -49,7 +49,7 @@ CPPFLAGS	= $(CFLAGS) -fno-exceptions \
 						-fno-threadsafe-statics \
 						-fno-use-cxa-atexit \
 						-Wno-narrowing \
-						-std=c++17
+						-std=c++20
 						
 # Assembler flags
 AFLAGS		= -g -msoft-float
