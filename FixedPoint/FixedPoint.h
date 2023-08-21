@@ -19,6 +19,15 @@ public:
     FixedPoint(const float& value) : _value(value * _ONE) {}
     FixedPoint(const double& value) : _value(value * _ONE) {}
 
+    explicit operator int() const                      { return AsInt(); }
+    explicit operator long() const                     { return AsInt(); }
+    explicit operator unsigned int() const             { return AsInt(); }
+    explicit operator unsigned long() const            { return AsInt(); }
+    explicit operator float() const                    { return AsFloat(); }
+    explicit operator double() const                   { return AsFloat(); }
+
+    FixedPoint &operator=(const FixedPoint &other) { _value = other._value; return *this; }
+
     constexpr bool operator==(const FixedPoint &other) const { return _value == other._value; }
     constexpr bool operator!=(const FixedPoint &other) const { return _value != other._value; }
     constexpr bool operator<(const FixedPoint &other) const { return _value < other._value; }
@@ -73,21 +82,26 @@ public:
     constexpr StoreType AsFixedPoint() const { return _value; }
     static constexpr FixedPoint FromFixedPoint(StoreType value) { return set(value); }
 
-
-    FixedPoint &operator=(const FixedPoint &other)
-    {
-        _value = other._value;
-        return *this;
-    }
-
     constexpr int AsInt() const { return _value >> FractionBits; }
     constexpr float AsFloat() const { return (float)_value / _ONE; }
 
     static constexpr FixedPoint PI() { return set(_ONE * 3.14159265359f); }
+    static constexpr FixedPoint E() { return set(_ONE * 2.71828182845905); }
+    static constexpr FixedPoint Zero = FixedPoint(0);
+    static constexpr FixedPoint One = FixedPoint(1);
+    static constexpr FixedPoint MinValue {._value = 2147483646};
+    static constexpr FixedPoint MaxValue = {._value = 2147483647};
+    static constexpr FixedPoint Epsilon() { return 0.000244140625; };
 
 private:
     StoreType _value;
     static constexpr StoreType _ONE = 1 << FractionBits;
+    static constexpr int INTEGER_BITS = sizeof(int) * 8 - FractionBits;
+    static constexpr int FRACTION_MASK = (((int)0xFFFFFFFF) >> FractionBits);
+    static constexpr int INTEGER_MASK = (-1 & ~FRACTION_MASK);
+    static constexpr int FRACTION_RANGE = FRACTION_MASK + 1;
+    static constexpr int MIN_INTEGER = (-2147483647 - 1) >> FractionBits;
+    static constexpr int MAX_INTEGER = (2147483647) >> FractionBits;
 
     static constexpr FixedPoint set(StoreType value)
     {

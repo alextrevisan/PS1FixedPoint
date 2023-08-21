@@ -66,7 +66,6 @@ void display(void)
     
 }
 
-
 int main(int argc, const char *argv[])
 {
     #define RCntIntr        0x1000                /*Interrupt mode*/
@@ -139,7 +138,8 @@ int main(int argc, const char *argv[])
 
         Assert.AreEqual( Float(-16).Abs(), Float(16), __LINE__, "Abs");        
 
-        Assert.IsLessThan(abs(Float::PI().AsFloat() - 3.14159265359f), 0.001f, __LINE__);
+        Assert.IsLessThan(abs(Float::PI().AsFloat() - 3.14159265359f), Float::Epsilon().AsFloat(), __LINE__);
+        Assert.IsLessThan(abs(Float::E().AsFloat() - 2.71828182845905f), Float::Epsilon().AsFloat(), __LINE__);
 
         Assert.AreEqual(Float::FromFixedPoint(SquareRoot12(Float(49).AsFixedPoint())), Float(7), __LINE__);
                                                                                          //round error from 5.65685424949
@@ -155,6 +155,12 @@ int main(int argc, const char *argv[])
 
         const auto magnitude = vector.length();
         Assert.AreEqual(magnitude, Float(50.2736f).AsFixedPoint(), __LINE__);
+
+        ps1::Vector3D svector(1,8,6);
+        const auto smagnitude = svector.length();
+        Assert.AreEqual(smagnitude, Float(10.049f).AsFixedPoint(), __LINE__);
+
+        
 
         const ps1::SVector3D nomalized = ps1::Vector3D::normalize(ps1::Vector3D(v1,v2,v3));
         const ps1::SVector3D test(Float(0.0199f).AsFixedPoint(), Float(0.9941f).AsFixedPoint(), Float(0.1192f).AsFixedPoint());
@@ -182,14 +188,14 @@ int main(int argc, const char *argv[])
         Assert.AreEqual(dotv, 263206, __LINE__);
 
         //Performance test
-        
-        /*int OldValue = 0;
+        /*
+        int OldValue = 0;
         ResetRCnt(RCntCNT1);
         OldValue = GetRCnt(RCntCNT1);
-        int value = 0;
+        unsigned int value = 0;
         //const Vector3D vectorTest(v1,v2,v3);
         
-        for(int i = 1; i < 1024; ++i)
+        for(int i = 200; i < 201; ++i)
         {
             ps1::Vector3D input = ps1::Vector3D(v1,i,v3);
             const auto output = ps1::Vector3D::normalize(input);
@@ -203,7 +209,7 @@ int main(int argc, const char *argv[])
         value = 0;
         //const Vector3D vectorTest(v1,v2,v3);
         
-        for(int i = 1; i < 1024; ++i)
+        for(int i = 200; i < 201; ++i)
         {
             VECTOR input{v1,i,v3};
             SVECTOR output;
@@ -211,8 +217,8 @@ int main(int argc, const char *argv[])
             value += output.vx;
         }
         NewValue = GetRCnt(RCntCNT1) - OldValue;
-        FntPrint(-1, "It took %d HBlanks! Count=%d\n", NewValue, value);*/
-        
+        FntPrint(-1, "It took %d HBlanks! Count=%d\n", NewValue, value);
+            */
 
         if(Assert.ErrorCount() == 0)
         {

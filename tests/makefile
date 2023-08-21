@@ -56,19 +56,14 @@ AFLAGS		= -g -msoft-float
 
 # Linker flags
 LDFLAGS		= -g -Ttext=0x80010000 -gc-sections \
-			-T $(GCC_BASE)/mipsel-unknown-elf/lib/ldscripts/elf32elmip.x
+			-T $(GCC_BASE)/mipsel-none-elf/lib/ldscripts/elf32elmip.x
 
-# Toolchain programs
-CC			= $(PREFIX)gcc
-CXX			= $(PREFIX)g++
-AS			= $(PREFIX)as
-LD			= $(PREFIX)ld
 
 all: $(OFILES) $(ENGINEFILES)
 	@mkdir -p $(BIN_FOLDER)
 	$(LD) $(LDFLAGS) $(LIBDIRS) $(OFILES) $(ENGINEFILES) $(LIBS)  -o bin/$(TARGET)
-	elf2x -q $(BIN_FOLDER)/$(TARGET) $(BIN_FOLDER)/$(TARGET).exe
-	elf2x -q $(BIN_FOLDER)/$(TARGET) $(BIN_FOLDER)/$(TARGET)
+	$(ELF2X) -q $(BIN_FOLDER)/$(TARGET) $(BIN_FOLDER)/$(TARGET).exe
+	$(ELF2X) -q $(BIN_FOLDER)/$(TARGET) $(BIN_FOLDER)/$(TARGET)
 
 iso: all
 	@mkdir -p $(ISO_FOLDER)
