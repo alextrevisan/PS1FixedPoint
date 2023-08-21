@@ -2,6 +2,8 @@
 #define _VECTOR_H_
 
 #include <psxgte.h>
+#include <inline_c.h>
+
 namespace ps1
 {
 template<typename VectorType>
@@ -9,6 +11,81 @@ struct Vector3F;
 
 typedef  Vector3F<VECTOR> Vector3D;
 typedef Vector3F<SVECTOR> SVector3D;
+
+inline void gte_ldv0_f(const VECTOR& v0)
+{
+    int xy11 = ((v0.vx&0xFFFF)|(v0.vy<<16));
+    int z11 = v0.vz;
+    asm volatile ("mtc2 %0, $0\n" : "+r"(xy11) : : );
+    asm volatile ("mtc2 %0, $1\nnop\nnop\n" : "+r"(z11) : : );   
+}
+
+#define gte_stlvnl( r0 ) __asm__ volatile (	\
+	"swc2	$25, 0( %0 );"	\
+	"swc2	$26, 4( %0 );"	\
+	"swc2	$27, 8( %0 )"	\
+	:						\
+	: "r"( r0 )	\
+	: "memory" )
+
+#define gte_ldlvl( r0 ) __asm__ volatile ( \
+	"lwc2	$9 , 0( %0 );"	\
+	"lwc2	$10 , 4( %0 );"	\
+    "lwc2	$11 , 8( %0 );"	\
+	:						\
+	: "r"( r0 )				\
+	: "$t0" )
+
+inline void gte_ldlvl_f(const VECTOR& v0)
+{
+    asm volatile ("mtc2 %0, $25\n" :  : "r"(v0.vx): );
+    asm volatile ("mtc2 %0, $26\n" :  : "r"(v0.vy): );
+    asm volatile ("mtc2 %0, $27\n" :  : "r"(v0.vz): );
+}
+
+#define gte_ldlvl_1( r0 ) __asm__ volatile (			\
+	"mtc2	%0, $9"					\
+	:							\
+	: "r"( r0 ) )
+
+#define gte_ldlvl_2( r0 ) __asm__ volatile (			\
+	"mtc2	%0, $10"					\
+	:							\
+	: "r"( r0 ) )
+#define gte_ldlvl_3( r0 ) __asm__ volatile (			\
+	"mtc2	%0, $11"					\
+	:							\
+	: "r"( r0 ) )
+#define gte_stmac_1() ({ u_long __value;\
+	__asm__ volatile (			\
+	".set noreorder;"			\
+	"mfc2	%0, $25;"					\
+	"nop;"					\
+	".set reorder"				\
+	: "=r"( __value ) :);\
+	__value;})
+#define gte_stmac_2() ({ u_long __value;\
+	__asm__ volatile (			\
+	".set noreorder;"			\
+	"mfc2	%0, $26;"					\
+	"nop;"					\
+	".set reorder"				\
+	: "=r"( __value ) :);\
+	__value;})
+#define gte_stmac_3() ({ u_long __value;\
+	__asm__ volatile (			\
+	".set noreorder;"			\
+	"mfc2	%0, $27;"					\
+	"nop;"					\
+	".set reorder"				\
+	: "=r"( __value ) :);\
+	__value;})
+inline void gte_stlvnl_f(VECTOR& v0)
+{
+    asm volatile ("mfc2 %0, $9\n" :   "=r"(v0.vx): :);
+    asm volatile ("mfc2 %0, $10\n" :   "=r"(v0.vy): :);
+    asm volatile ("mfc2 %0, $11\n" :   "=r"(v0.vz): :);
+}
 
 template<typename VectorType>
 struct Vector3F : public VectorType
@@ -18,13 +95,13 @@ struct Vector3F : public VectorType
     :VectorType{0,0,0}
     {}
     Vector3F(type vx, type vy, type vz)
-    :VectorType{vx, vy, vz}
+    :VectorType{.vx=vx, .vy=vy, .vz=vz}
     {
 
     }
 
     Vector3F(const VectorType& vector )
-    :VectorType::vx(vector.vx), VectorType::vy(vector.vy), VectorType::vz(vector.vz)
+    :VectorType{vector}
     {
 
     }
@@ -62,7 +139,20 @@ struct Vector3F : public VectorType
 
     constexpr inline int dotProduct() const
     {
-        return VectorType::vx*VectorType::vx + VectorType::vy*VectorType::vy + VectorType::vz*VectorType::vz;
+        if constexpr(is_same<VectorType, SVECTOR>::value)
+        {
+
+            VECTOR myinput{VectorType::vx<<12, VectorType::vy<<12, VectorType::vz<<12};
+            gte_ldlvl(&myinput);
+            gte_sqr12();
+            VECTOR out;
+            gte_stlvnl(&out);
+            return (out.vx+out.vy+out.vz)>>12;
+        }
+        else
+        {
+            return VectorType::vx*VectorType::vx + VectorType::vy*VectorType::vy + VectorType::vz*VectorType::vz;        
+        }
     }
 
     const int dotProduct(const Vector3F& other) const
